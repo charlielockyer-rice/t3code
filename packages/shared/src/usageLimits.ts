@@ -365,6 +365,15 @@ export function displayLimitWindows(pool: LimitPool) {
     .sort((left, right) => cursorUsageWindowRank(left.id) - cursorUsageWindowRank(right.id));
 }
 
+/**
+ * A pooled reading holds only until its first reset lands. After that at least
+ * one account has refilled since it was read, so the pool is unknown until a
+ * fresh snapshot arrives.
+ */
+export function isLimitPoolWindowExpired(window: LimitPoolWindow, now: number): boolean {
+  return (window.resets[0]?.at ?? Number.POSITIVE_INFINITY) <= now;
+}
+
 const WINDOW_KIND_ORDER: Record<ServerProviderUsageWindow["kind"], number> = {
   session: 0,
   weekly: 1,

@@ -23,8 +23,14 @@ function accountLabel(account: UsageLimitsReport["accounts"][number]): string {
     : driver;
 }
 
-function AccountSummary({ account }: { readonly account: UsageLimitsReport["accounts"][number] }) {
-  const label = accountLabel(account);
+/** An account's label, blurred when it is an email, then its plan. */
+export function AccountSummary({
+  label,
+  plan,
+}: {
+  readonly label: string;
+  readonly plan?: string | undefined;
+}) {
   return (
     <>
       {label.includes("@") ? (
@@ -39,7 +45,7 @@ function AccountSummary({ account }: { readonly account: UsageLimitsReport["acco
       ) : (
         label
       )}
-      {account.plan ? ` · ${account.plan}` : null}
+      {plan ? `${label ? " · " : ""}${plan}` : null}
     </>
   );
 }
@@ -54,7 +60,7 @@ export function usageLimitsBannerItem(
   const [first] = report.accounts;
   const single = report.accounts.length === 1 && first ? first : null;
   const summary = single ? (
-    <AccountSummary account={single} />
+    <AccountSummary label={accountLabel(single)} plan={single.plan} />
   ) : (
     `${report.accounts.length} accounts`
   );
@@ -92,7 +98,7 @@ function UsageLimitsBannerBody({
             <div key={account.id} className="flex min-w-0 flex-col gap-1">
               {report.accounts.length > 1 ? (
                 <span className="truncate text-xs text-muted-foreground">
-                  <AccountSummary account={account} />
+                  <AccountSummary label={accountLabel(account)} plan={account.plan} />
                 </span>
               ) : null}
               {notice ? (

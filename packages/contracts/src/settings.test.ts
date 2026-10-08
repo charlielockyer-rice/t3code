@@ -347,6 +347,26 @@ describe("ClientSettings chat width", () => {
   });
 });
 
+describe("ClientSettings usage meter mode", () => {
+  it("hides the meters for existing settings without a saved mode", () => {
+    expect(decodeClientSettings({}).usageMeterMode).toBe("none");
+  });
+
+  it.each(["bars", "percent", "bars-percent", "none"])(
+    "round-trips the %s mode",
+    (usageMeterMode) => {
+      const settings = decodeClientSettings({ usageMeterMode });
+      expect(encodeClientSettings(settings).usageMeterMode).toBe(usageMeterMode);
+      expect(decodeClientSettingsPatch({ usageMeterMode }).usageMeterMode).toBe(usageMeterMode);
+    },
+  );
+
+  it("rejects unsupported modes", () => {
+    expect(() => decodeClientSettings({ usageMeterMode: "numbers" })).toThrow();
+    expect(() => decodeClientSettingsPatch({ usageMeterMode: "numbers" })).toThrow();
+  });
+});
+
 describe("ClientSettings load balancing", () => {
   it("requires opt-in when settings are new or omit load balancing", () => {
     expect(decodeClientSettings({}).loadBalancingEnabled).toBe(false);

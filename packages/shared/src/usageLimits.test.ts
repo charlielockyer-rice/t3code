@@ -20,6 +20,7 @@ import {
   displayLimitWindows,
   elapsedShare,
   formatResetsIn,
+  isLimitPoolWindowExpired,
   limitsNotice,
   paceOf,
   providersWithLimits,
@@ -755,6 +756,25 @@ describe("pooled account columns", () => {
     ];
     expect(keys(collectLimitPools(accounts, now)[0]!)).toEqual([["a", "b", "y", "z"]]);
     expect(keys(collectLimitPools(accounts.toReversed(), now)[0]!)).toEqual([["a", "b", "y", "z"]]);
+  });
+
+  it("expires a pooled reading once any account's reset lands", () => {
+    const firstReset = Date.parse("2026-09-03T13:00:00.000Z");
+    const [pool] = collectLimitPools(
+      [
+        account("a", [window]),
+        account("b", [{ ...window, resetsAt: "2026-09-03T13:00:00.000Z" }]),
+        account("c", [{ ...window, resetsAt: undefined }]),
+      ],
+      now,
+    );
+    expect(isLimitPoolWindowExpired(pool!.windows[0]!, firstReset - 1)).toBe(false);
+    expect(isLimitPoolWindowExpired(pool!.windows[0]!, firstReset)).toBe(true);
+    const [unclocked] = collectLimitPools(
+      [account("c", [{ ...window, resetsAt: undefined }])],
+      now,
+    );
+    expect(isLimitPoolWindowExpired(unclocked!.windows[0]!, firstReset)).toBe(false);
   });
 });
 

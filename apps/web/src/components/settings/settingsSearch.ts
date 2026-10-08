@@ -285,6 +285,12 @@ export const SETTINGS_SEARCH_ITEMS = [
     to: "/settings/appearance",
   },
   {
+    id: "usage-meters",
+    title: "Usage meters",
+    to: "/settings/appearance",
+    searchTerms: ["subscription limits quota header bars percent hide"],
+  },
+  {
     id: "project-grouping",
     title: "Project grouping",
     to: "/settings/general",

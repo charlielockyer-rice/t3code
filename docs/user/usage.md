@@ -100,6 +100,13 @@ current model's limits without leaving the conversation. The result opens above 
 closes when you dismiss it or send your next message. It uses the same snapshot as **Usage → Limits**, so it does not run the agent or refresh
 anything. The command is offered only for providers that appear under **Usage → Limits**.
 
+On web and desktop, turn on **Settings → Appearance → Usage meters** to show a meter for each
+provider under **Usage → Limits** in the thread header, pooled across environments, when the header
+has room. Choose bars, the percent left, or both. Select a meter for each account's windows; redeem
+reset credits from **Usage → Limits**. The meters use the same snapshot and do not refresh anything.
+Once a window's reset time passes, its meter shows as unknown until a new reading arrives, such as
+when you open **Usage → Limits**.
+
 OpenCode Go reports its session, weekly, and monthly allowance when OpenCode runs locally in
 the environment. T3 cannot report limits for external OpenCode servers because their credentials
 belong to the remote server. Cursor reports

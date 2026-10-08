@@ -26,6 +26,7 @@ import {
   DEFAULT_ENVIRONMENT_IDENTIFICATION_MODE,
   DEFAULT_UNIFIED_SETTINGS,
   type ChatWidth,
+  type UsageMeterMode,
   type DiffLayout,
   type EnvironmentIdentificationMode,
   MAX_APPEARANCE_CONTRAST,
@@ -204,6 +205,13 @@ const CHAT_WIDTH_LABELS: Record<ChatWidth, string> = {
   comfortable: "Comfortable",
   wide: "Wide",
   full: "Full",
+};
+
+const USAGE_METER_MODE_LABELS: Record<UsageMeterMode, string> = {
+  none: "Off",
+  bars: "Bars",
+  percent: "Percent",
+  "bars-percent": "Bars and percent",
 };
 
 const DIFF_LAYOUT_LABELS: Record<DiffLayout, string> = {
@@ -595,6 +603,9 @@ export function useSettingsRestore(onRestored?: () => void) {
       DEFAULT_UNIFIED_SETTINGS.persistComposerContextStrip
         ? ["Composer context"]
         : []),
+      ...(settings.usageMeterMode !== DEFAULT_UNIFIED_SETTINGS.usageMeterMode
+        ? ["Usage meters"]
+        : []),
       ...getChangedTypographySettingLabels(settings),
       ...(settings.diffFilesCollapsed !== DEFAULT_UNIFIED_SETTINGS.diffFilesCollapsed
         ? ["Default diff file state"]
@@ -704,6 +715,7 @@ export function useSettingsRestore(onRestored?: () => void) {
       settings.panelAnimationDurationMs,
       settings.responseStreamingMode,
       settings.persistComposerContextStrip,
+      settings.usageMeterMode,
       settings.enableProviderUpdateChecks,
       settings.continueThreadsAfterServerUpdate,
       settings.sidebarAutoSettleAfterDays,
@@ -796,6 +808,7 @@ export function useSettingsRestore(onRestored?: () => void) {
       inAppNotificationsEnabled: DEFAULT_UNIFIED_SETTINGS.inAppNotificationsEnabled,
       wordWrap: DEFAULT_UNIFIED_SETTINGS.wordWrap,
       persistComposerContextStrip: DEFAULT_UNIFIED_SETTINGS.persistComposerContextStrip,
+      usageMeterMode: DEFAULT_UNIFIED_SETTINGS.usageMeterMode,
       diffFilesCollapsed: DEFAULT_UNIFIED_SETTINGS.diffFilesCollapsed,
       diffIgnoreWhitespace: DEFAULT_UNIFIED_SETTINGS.diffIgnoreWhitespace,
       diffLayout: DEFAULT_UNIFIED_SETTINGS.diffLayout,
@@ -1421,6 +1434,47 @@ export function AppearanceSettingsPanel() {
               }
               aria-label="Keep composer context visible in active threads"
             />
+          }
+        />
+
+        <SettingsRow
+          {...searchableSetting("usage-meters")}
+          description="Show each provider's subscription limits in the thread header."
+          resetAction={
+            settings.usageMeterMode !== DEFAULT_UNIFIED_SETTINGS.usageMeterMode ? (
+              <SettingResetButton
+                label="usage meters"
+                onClick={() =>
+                  updateSettings({ usageMeterMode: DEFAULT_UNIFIED_SETTINGS.usageMeterMode })
+                }
+              />
+            ) : null
+          }
+          control={
+            <div className="w-full sm:w-40">
+              <Select
+                value={settings.usageMeterMode}
+                onValueChange={(value) => {
+                  if (
+                    value === "bars" ||
+                    value === "percent" ||
+                    value === "bars-percent" ||
+                    value === "none"
+                  )
+                    updateSettings({ usageMeterMode: value });
+                }}
+              >
+                <SelectTrigger size="sm" className="w-full min-w-0" aria-label="Usage meters">
+                  <SelectValue>{USAGE_METER_MODE_LABELS[settings.usageMeterMode]}</SelectValue>
+                </SelectTrigger>
+                <SelectPopup align="end" alignItemWithTrigger={false}>
+                  <SelectItem value="none">Off (default)</SelectItem>
+                  <SelectItem value="bars">Bars</SelectItem>
+                  <SelectItem value="percent">Percent</SelectItem>
+                  <SelectItem value="bars-percent">Bars and percent</SelectItem>
+                </SelectPopup>
+              </Select>
+            </div>
           }
         />
 
